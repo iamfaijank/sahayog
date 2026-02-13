@@ -18,29 +18,33 @@ frappe.query_reports["Branch Stock"] = {
       frappe.db
         .get_value("Employee", { user_id: frappe.session.user }, [
           "designation",
-          "branch",
+          "sol_id",
         ])
         .then((r) => {
           const emp = r.message;
-          if (emp) {
-            const is_manager =
-              emp.designation && emp.designation.toLowerCase().includes("manager");
-            
-            if (emp.branch) {
-              report.set_filter_value("warehouse", emp.branch);
-            }
+          if (emp && emp.sol_id) {
+            frappe.db.get_value("Branch", { sol_id: emp.sol_id }, "custom_warehouse").then((br) => {
+              const branch_warehouse = br.message && br.message.custom_warehouse;
+              const is_manager =
+                emp.designation &&
+                emp.designation.toLowerCase().includes("manager");
 
-            if (!is_manager && emp.branch) {
-              const filter = report.get_filter("warehouse");
-              if (filter) {
-                filter.df.get_query = () => {
-                  return {
-                    filters: { name: emp.branch },
-                  };
-                };
-                filter.refresh();
+              if (branch_warehouse) {
+                report.set_filter_value("warehouse", branch_warehouse);
               }
-            }
+
+              if (!is_manager && branch_warehouse) {
+                const filter = report.get_filter("warehouse");
+                if (filter) {
+                  filter.df.get_query = () => {
+                    return {
+                      filters: { name: branch_warehouse },
+                    };
+                  };
+                  filter.refresh();
+                }
+              }
+            });
           }
         });
     }
@@ -59,7 +63,7 @@ frappe.query_reports["Branch Stock"] = {
 
     function bulk_action(type) {
       const item_codes = Object.keys(
-        frappe.query_reports["Branch Stock"].selected_items
+        frappe.query_reports["Branch Stock"].selected_items,
       );
 
       if (!item_codes.length) {
@@ -90,7 +94,7 @@ frappe.query_reports["Branch Stock"] = {
               filters: { custom_warehouse_category: ["like", "Store%"] },
             }),
           },
-          { fieldtype: "Section Break" }
+          { fieldtype: "Section Break" },
         );
       } else if (type === "emmr") {
         fields.push(
@@ -112,7 +116,7 @@ frappe.query_reports["Branch Stock"] = {
               filters: { custom_warehouse_category: ["like", "Store%"] },
             }),
           },
-          { fieldtype: "Section Break" }
+          { fieldtype: "Section Break" },
         );
       }
 

@@ -1,5 +1,3 @@
-
-
 import frappe
 
 def execute(filters=None):
@@ -16,17 +14,29 @@ def execute(filters=None):
         dict(fieldname="select_row", label="Select Items", fieldtype="Data", width=60),
     ]
 
-    conditions = "WHERE bin.actual_qty != 0"
+    # Conditions for the query
+    conditions = ["bin.actual_qty != 0"]
     values = {}
 
     if warehouse:
-        conditions += " AND bin.warehouse = %(warehouse)s"
-        values["warehouse"] = warehouse
+        # Get the sol_id of the selected custom_warehouse branch
+        selected_sol_id = frappe.db.get_value("Branch", {"custom_warehouse": warehouse}, "sol_id")
+        if selected_sol_id:
+            # Join with Branch to filter all warehouses belonging to this sol_id
+            # Note: We match bin.warehouse to custom_warehouse in tabBranch
+            conditions.append("exists (select 1 from `tabBranch` br where br.custom_warehouse = bin.warehouse and br.sol_id = %(sol_id)s)")
+            values["sol_id"] = selected_sol_id
+        else:
+            # Fallback to direct warehouse match if no sol_id mapping found
+            conditions.append("bin.warehouse = %(warehouse)s")
+            values["warehouse"] = warehouse
     else:
         # If no warehouse is selected, only allow Admin or System Manager to see all stock
         user_roles = frappe.get_roles(frappe.session.user)
         if frappe.session.user != "Administrator" and "System Manager" not in user_roles:
             return columns, []
+
+    where_clause = " WHERE " + " AND ".join(conditions)
 
     query = f"""
         SELECT
@@ -37,7 +47,7 @@ def execute(filters=None):
             '' AS select_row
         FROM `tabBin` bin
         LEFT JOIN `tabItem` item ON bin.item_code = item.name
-        {conditions}
+        {where_clause}
         GROUP BY bin.item_code, item.item_name, bin.warehouse
         HAVING SUM(bin.actual_qty) != 0
         ORDER BY bin.item_code, bin.warehouse
