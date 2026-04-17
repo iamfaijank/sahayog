@@ -854,13 +854,17 @@
         </h1>
         <h1 class="page-title" v-else>
           [[ activeItem ]]
-          <span class="detail-id-badge">[[ detailRecord ? detailRecord.name : '' ]]</span>
+          <span class="detail-id-badge"
+            >[[ detailRecord ? detailRecord.name : '' ]]</span
+          >
           <span
             class="detail-status-badge"
             v-if="detailRecord"
             :class="getBadgeClass(detailRecord, detailRecord.hasOwnProperty('docstatus') ? 'docstatus' : 'status')"
           >
-            [[ getBadgeText(detailRecord, detailRecord.hasOwnProperty('docstatus') ? 'docstatus' : 'status') ]]
+            [[ getBadgeText(detailRecord,
+            detailRecord.hasOwnProperty('docstatus') ? 'docstatus' : 'status')
+            ]]
           </span>
         </h1>
       </div>
@@ -1215,7 +1219,7 @@
                 >
               </button>
               <button
-                class="btn-view-toggle"
+                class="btn-create"
                 style="background: var(--bg-card); color: var(--text-main)"
                 @click="showEMRCreateView = false"
               >
@@ -4459,6 +4463,7 @@
   /* CREATE ITEM FORM */
   .form-group {
     margin-bottom: 18px;
+    margin-left: 8px;
   }
   .form-label {
     display: block;
@@ -4637,7 +4642,7 @@
     background: var(--gray-100);
     color: var(--gray-700);
     border: 1px solid var(--border-color);
-    padding: 10px 20px;
+    padding: 10px 24px;
     border-radius: 8px;
     font-weight: 600;
     font-size: 14px;
