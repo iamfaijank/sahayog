@@ -1835,31 +1835,9 @@
             </div>
 
             <!-- Three-Column Grid Layout -->
-            <div style="display: grid; grid-template-columns: 320px 1.2fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 24px; margin-bottom: 24px;">
               
-              <!-- Left Column: Remarks (Requested as Comment Card space) -->
-              <div style="display: flex; flex-direction: column; gap: 16px;">
-                <div class="flow-card" style="padding: 20px; height: 100%; display: flex; flex-direction: column; background: rgba(54, 150, 150, 0.02);">
-                  <h4 style="margin-top: 0; margin-bottom: 16px; color: #369696; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-transform: uppercase;">
-                    <i class="fas fa-comment-dots"></i> Receipt Remarks
-                  </h4>
-                  <div class="form-group" style="flex: 1; display: flex; flex-direction: column;">
-                    <label class="form-label" style="font-size: 0.8rem; color: var(--text-muted);">Internal Notes</label>
-                    <textarea 
-                      class="form-input" 
-                      style="flex: 1; min-height: 250px; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); font-size: 0.9rem; resize: none; background: white;" 
-                      v-model="inwardForm.remarks"
-                      placeholder="Add internal notes or instructions for this receipt..."
-                    ></textarea>
-                  </div>
-                  <div style="margin-top: 16px; font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-                    <i class="fas fa-info-circle"></i>
-                    <span>Remarks are saved on the receipt record.</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Column 2: Core Receipt Info -->
+              <!-- Column 1: Core Receipt Info -->
               <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div style="padding: 16px; background: rgba(100, 116, 139, 0.03); border-radius: 12px; border: 1px solid var(--border-color);">
                   <h4 style="margin-top: 0; margin-bottom: 16px; color: #369696; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-transform: uppercase;">
@@ -1932,15 +1910,15 @@
                 </div>
               </div>
 
-              <!-- Column 2: Order Ref & Past Stock -->
+              <!-- Column 2: Order Ref & Stock Date Options -->
               <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div style="padding: 16px; background: rgba(100, 116, 139, 0.03); border-radius: 12px; border: 1px solid var(--border-color);">
                   <h4 style="margin-top: 0; margin-bottom: 16px; color: #369696; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-transform: uppercase;">
                     <i class="fas fa-file-invoice"></i> Order References
                   </h4>
                   
-                  <div style="display: flex; gap: 12px; margin-bottom: 0;">
-                    <div class="form-group" style="flex: 1; margin-bottom: 0 !important;">
+                  <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 0;">
+                    <div class="form-group" style="margin-bottom: 0 !important;">
                       <label class="form-label">PO/WO Number</label>
                       <select class="form-input" v-model="inwardForm.custom_po_wo">
                         <option value="" disabled>Select Type</option>
@@ -1948,7 +1926,7 @@
                         <option value="Work Order">Work Order</option>
                       </select>
                     </div>
-                    <div class="form-group" style="flex: 1; margin-bottom: 0 !important;">
+                    <div class="form-group" style="margin-bottom: 0 !important;">
                       <label class="form-label">Request For</label>
                       <select class="form-input" v-model="inwardForm.custom_request_for">
                         <option value="" disabled>Select Category</option>
@@ -1977,6 +1955,23 @@
                       class="form-input"
                       v-model="inwardForm.existing_stock_date"
                     />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Column 3: Remarks (Last Column) -->
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="flow-card" style="padding: 16px; background: rgba(54, 150, 150, 0.02); border: 1px solid var(--border-color); border-radius: 12px; height: 100%; display: flex; flex-direction: column;">
+                  <h4 style="margin-top: 0; margin-bottom: 12px; color: #369696; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-transform: uppercase;">
+                    <i class="fas fa-comment-dots"></i> Receipt Remarks
+                  </h4>
+                  <div class="form-group" style="flex: 1; display: flex; flex-direction: column; margin-bottom: 0 !important;">
+                    <textarea 
+                      class="form-input" 
+                      style="flex: 1; min-height: 200px; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); font-size: 0.85rem; resize: none; background: white;" 
+                      v-model="inwardForm.remarks"
+                      placeholder="Add internal notes or instructions..."
+                    ></textarea>
                   </div>
                 </div>
               </div>
