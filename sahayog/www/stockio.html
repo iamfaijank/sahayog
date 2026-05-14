@@ -64,6 +64,43 @@
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
   }
 
+  /* Inward Detail Styles */
+  .info-item-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: var(--gray-50);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+  .info-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+  .info-value {
+    font-weight: 700;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    word-break: break-all;
+  }
+  .inward-detail-parent {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    height: 100%;
+    overflow: hidden;
+  }
+  @media (max-width: 1024px) {
+    .inward-detail-parent {
+      grid-template-columns: 1fr;
+      overflow-y: auto;
+    }
+  }
+
   body {
     font-family:
       "Inter",
@@ -4456,6 +4493,267 @@
                     >
                       <i class="fas fa-truck-fast"></i>
                       <span>Dispatch Selected</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Inward Specialized Layout -->
+            <div
+              v-else-if="activeItem === 'Inward'"
+              class="inward-detail-parent"
+            >
+              <!-- Left Column: Items and Info Strip -->
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 24px;
+                  overflow-y: auto;
+                  padding-right: 4px;
+                "
+              >
+                <!-- Info Strip (Standard Style) -->
+                <div class="info-strip" style="gap: 24px; flex-wrap: wrap;">
+                  <div class="info-item">
+                    <div class="info-icon" style="color: #369696">
+                      <i class="fas fa-truck"></i>
+                    </div>
+                    <div class="info-content">
+                      <span class="info-label">Supplier</span>
+                      <span class="info-value">[[ detailRecord.supplier || '-' ]]</span>
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <div class="info-icon" style="color: #369696">
+                      <i class="fas fa-warehouse"></i>
+                    </div>
+                    <div class="info-content">
+                      <span class="info-label">Warehouse</span>
+                      <span class="info-value">[[ detailRecord.set_warehouse || '-' ]]</span>
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <div class="info-icon" style="color: #369696">
+                      <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="info-content">
+                      <span class="info-label">Posting Date</span>
+                      <span class="info-value">[[ detailRecord.posting_date || '-' ]]</span>
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <div class="info-icon" style="color: #369696">
+                      <i class="fas fa-tag"></i>
+                    </div>
+                    <div class="info-content">
+                      <span class="info-label">Request For</span>
+                      <span class="info-value">[[ detailRecord.custom_request_for || '-' ]]</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Items Table -->
+                <div class="flow-card" style="padding: 0; overflow: hidden">
+                  <div
+                    style="
+                      padding: 16px 20px;
+                      border-bottom: 1px solid var(--border-color);
+                      background: var(--gray-50);
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                    "
+                  >
+                    <h4 class="section-subtitle" style="margin: 0">
+                      Received Items
+                    </h4>
+                    <span class="badge active"
+                      >[[ detailRecord.items ? detailRecord.items.length : 0 ]]
+                      Items</span
+                    >
+                  </div>
+                  <div class="table-responsive">
+                    <table class="items-table">
+                      <thead>
+                        <tr>
+                          <th>Item</th>
+                          <th style="text-align: right">Qty</th>
+                          <th style="text-align: right">Rate</th>
+                          <th style="text-align: right">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="item in detailRecord.items" :key="item.name">
+                          <td>
+                            <div style="display: flex; flex-direction: column">
+                              <span
+                                style="font-weight: 700; color: #369696"
+                                >[[ item.item_code ]]</span
+                              >
+                              <span
+                                style="
+                                  font-size: 0.8rem;
+                                  color: var(--text-muted);
+                                "
+                                >[[ item.item_name ]]</span
+                              >
+                            </div>
+                          </td>
+                          <td style="text-align: right; font-weight: 700">
+                            [[ item.qty ]] [[ item.uom ]]
+                          </td>
+                          <td 
+                            style="text-align: right"
+                            v-html="frappe.format(item.rate, { fieldtype: 'Currency' })"
+                          ></td>
+                          <td 
+                            style="text-align: right; font-weight: 700"
+                            v-html="frappe.format(item.amount, { fieldtype: 'Currency' })"
+                          ></td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr
+                          style="
+                            background: var(--gray-50);
+                            font-weight: 800;
+                            border-top: 2px solid var(--border-color);
+                          "
+                        >
+                          <td colspan="1">Totals</td>
+                          <td style="text-align: right">
+                            [[ detailRecord.total_qty ]]
+                          </td>
+                          <td></td>
+                          <td 
+                            style="text-align: right; color: #369696"
+                            v-html="frappe.format(detailRecord.grand_total, { fieldtype: 'Currency' })"
+                          ></td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Metadata and Comments -->
+              <div
+                style="display: flex; flex-direction: column; gap: 24px; overflow-y: auto"
+              >
+                <!-- Summary Card -->
+                <div class="flow-card" style="padding: 20px">
+                  <h4 class="section-subtitle" style="margin-bottom: 16px">
+                    Reference Info
+                  </h4>
+                  <div style="display: flex; flex-direction: column; gap: 12px">
+                    <div class="detail-grid-item">
+                      <span class="detail-grid-label">PO/WO Number</span>
+                      <span class="detail-grid-value"
+                        >[[ detailRecord.custom_po_wo || 'N/A' ]]</span
+                      >
+                    </div>
+                    <div
+                      class="detail-grid-item"
+                      v-if="detailRecord.remarks"
+                    >
+                      <span class="detail-grid-label">Remarks</span>
+                      <span
+                        class="detail-grid-value"
+                        style="font-weight: 400; font-size: 0.9rem"
+                        >[[ detailRecord.remarks ]]</span
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Comments -->
+                <div
+                  class="flow-card"
+                  style="
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    min-height: 450px;
+                  "
+                >
+                  <h4 class="section-subtitle" style="margin-bottom: 16px">
+                    Comments
+                  </h4>
+                  <div
+                    class="comments-list"
+                    style="flex: 1; overflow-y: auto; margin-bottom: 16px"
+                  >
+                    <div
+                      v-if="!comments.length"
+                      class="text-muted"
+                      style="text-align: center; padding: 20px"
+                    >
+                      No comments yet
+                    </div>
+                    <div
+                      v-for="c in comments"
+                      :key="c.name"
+                      class="comment-item"
+                      style="
+                        margin-bottom: 12px;
+                        padding: 12px;
+                        background: var(--gray-50);
+                        border-radius: 8px;
+                        border: 1px solid var(--border-color);
+                      "
+                    >
+                      <div
+                        style="
+                          display: flex;
+                          justify-content: space-between;
+                          font-size: 0.7rem;
+                          margin-bottom: 6px;
+                        "
+                      >
+                        <span style="font-weight: 700; color: #369696"
+                          >[[ c.comment_by ]]</span
+                        >
+                        <span class="text-muted"
+                          >[[ c.creation.split(' ')[0] ]]</span
+                        >
+                      </div>
+                      <div
+                        v-html="c.content"
+                        style="font-size: 0.85rem; line-height: 1.4"
+                      ></div>
+                    </div>
+                  </div>
+                  <!-- Comment Input -->
+                  <div
+                    style="
+                      border-top: 1px solid var(--border-color);
+                      padding-top: 16px;
+                    "
+                  >
+                    <div
+                      id="comment-editor"
+                      contenteditable="true"
+                      class="form-input"
+                      style="
+                        min-height: 80px;
+                        margin-bottom: 12px;
+                        font-size: 0.9rem;
+                        background: var(--bg-surface);
+                        border: 1px solid var(--border-color);
+                        padding: 10px;
+                        border-radius: 8px;
+                        outline: none;
+                      "
+                      placeholder="Add a comment..."
+                    ></div>
+                    <button
+                      class="btn-create-inline"
+                      style="width: 100%; justify-content: center"
+                      @click="addComment()"
+                    >
+                      Post Comment
                     </button>
                   </div>
                 </div>
